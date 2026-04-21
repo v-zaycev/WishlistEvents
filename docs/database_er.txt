@@ -1,0 +1,79 @@
+@startuml
+!define table(x) entity x << (T,#FFAAAA) >>
+
+table(users) {
+  * id : INTEGER
+  --
+  name : TEXT
+  email : TEXT
+  password : TEXT
+}
+
+table(wishlists) {
+  * id : INTEGER
+  --
+  name : TEXT
+  user_id : INTEGER
+}
+
+table(items) {
+  * id : INTEGER
+  --
+  name : TEXT
+  price : FLOAT
+  wishlist_id : INTEGER
+  booked_by : INTEGER
+  booked_event_id : INTEGER
+}
+
+table(events) {
+  * id : INTEGER
+  --
+  name : TEXT
+  date : DATE
+  organizer_id : INTEGER
+}
+
+table(event_wishlists) {
+  * event_id : INTEGER
+  * wishlist_id : INTEGER
+}
+
+table(event_participants) {
+  * event_id : INTEGER
+  * user_id : INTEGER
+}
+
+table(expenses) {
+  * id : INTEGER
+  --
+  name : TEXT
+  total_amount : FLOAT
+  event_id : INTEGER
+}
+
+table(expense_shares) {
+  * id : INTEGER
+  --
+  amount : FLOAT
+  expense_id : INTEGER
+  user_id : INTEGER
+}
+
+users ||--o{ wishlists : "user_id"
+users ||--o{ events : "organizer_id"
+users ||--o{ event_participants : "user_id"
+users ||--o{ items : "booked_by"
+users ||--o{ expense_shares : "user_id"
+
+wishlists ||--o{ items : "wishlist_id"
+wishlists ||--o{ event_wishlists : "wishlist_id"
+
+events ||--o{ event_wishlists : "event_id"
+events ||--o{ event_participants : "event_id"
+events ||--o{ items : "booked_event_id"
+events ||--o{ expenses : "event_id"
+
+expenses ||--o{ expense_shares : "expense_id"
+
+@enduml
