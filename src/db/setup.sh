@@ -16,5 +16,5 @@ sudo -u postgres psql -d $db_name -f $sql_dir/functions/add_organizer_to_partici
 
 echo "creating triggers..."
 sudo -u postgres psql -d $db_name -f $sql_dir/triggers/trigger_add_organizer.sql
-
+sudo -u postgres psql -d $db_name -f $sql_dir/triggers/trigger_update_item_status.sql
 echo "Done..."

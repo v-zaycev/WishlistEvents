@@ -140,14 +140,26 @@ class ExpenseResponse(BaseModel):
         from_attributes = True
 
 # ========== Booking schemas ==========
-class BookingRequest(BaseModel):
-    item_id: int
-    event_id: int
+class EventItemResponse(BaseModel):
+    id: int
+    name: str
+    price: Optional[float] = None
+    link: Optional[str] = None
+    description: Optional[str] = None
+    wishlist_id: int
+    wishlist_name: str
+    is_booked: bool
+    booked_by_user_id: Optional[int] = None
+    booked_by_user_name: Optional[str] = None
+
+    class Config:
+        from_attributes = True
 
 class BookingResponse(BaseModel):
     message: str
     item_id: int
     user_id: int
     event_id: int
+    item_name: str
 
 WishlistWithItemsResponse.model_rebuild()

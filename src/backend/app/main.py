@@ -1,5 +1,11 @@
 from fastapi import FastAPI
-from app.routers import register_router, login_router, wishlists_router, events_router
+from app.routers import (
+    register_router,
+    login_router,
+    wishlists_router,
+    events_router,
+    bookings_router
+)
 
 app = FastAPI(
     title="WishlistEvents API",
@@ -7,11 +13,11 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# Подключаем роутеры
 app.include_router(register_router)
 app.include_router(login_router)
 app.include_router(wishlists_router)
 app.include_router(events_router)
+app.include_router(bookings_router)
 
 @app.get("/")
 def root():
