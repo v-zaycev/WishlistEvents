@@ -11,4 +11,10 @@ sudo -u $db_user psql -f $sql_dir/create_db.sql
 echo "creating tables..."
 sudo -u $db_user psql -d $db_name -f $sql_dir/create_tables.sql
 
+echo "creating functions..."
+sudo -u postgres psql -d $db_name -f $sql_dir/functions/add_organizer_to_participants.sql
+
+echo "creating triggers..."
+sudo -u postgres psql -d $db_name -f $sql_dir/triggers/trigger_add_organizer.sql
+
 echo "Done..."
