@@ -289,3 +289,35 @@ def get_event_balances(
     balances = calculate_balances(db, event_id)
 
     return balances
+
+# Удалить трату (только организатор или создатель траты)
+@router.delete("/{event_id}/expenses/{expense_id}")
+def delete_expense(
+    event_id: int,
+    expense_id: int,
+    user_id: int,
+    db: Session = Depends(get_db)
+):
+    event = check_event_access(db, event_id, user_id)
+
+    expense = db.query(models.Expense).filter(
+        models.Expense.id == expense_id,
+        models.Expense.event_id == event_id
+    ).first()
+
+    if not expense:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Expense not found"
+        )
+
+    if event.organizer_id != user_id and expense.paid_by != user_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only event organizer or expense creator can delete this expense"
+        )
+
+    db.delete(expense)
+    db.commit()
+
+    return {"message": "Expense deleted successfully"}

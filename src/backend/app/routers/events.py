@@ -311,3 +311,96 @@ def add_participant_to_event(
         "event_id": event_id,
         "participant_id": participant_id
     }
+
+# Удалить событие (только организатор)
+@router.delete("/{event_id}")
+def delete_event(
+    event_id: int,
+    user_id: int,
+    db: Session = Depends(get_db)
+):
+
+    event = get_event_or_404(db, event_id)
+
+    if event.organizer_id != user_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only event organizer can delete the event"
+        )
+
+    db.delete(event)
+    db.commit()
+
+    return {"message": "Event deleted successfully"}
+
+# Отвязать вишлист от события (только организатор)
+@router.delete("/{event_id}/wishlist/{wishlist_id}")
+def detach_wishlist_from_event(
+    event_id: int,
+    wishlist_id: int,
+    user_id: int,
+    db: Session = Depends(get_db)
+):
+
+    event = get_event_or_404(db, event_id)
+
+    if event.organizer_id != user_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only event organizer can detach wishlists"
+        )
+
+    event_wishlist = db.query(models.EventWishlist).filter(
+        models.EventWishlist.event_id == event_id,
+        models.EventWishlist.wishlist_id == wishlist_id
+    ).first()
+
+    if not event_wishlist:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Wishlist is not attached to this event"
+        )
+
+    db.delete(event_wishlist)
+    db.commit()
+
+    return {"message": "Wishlist detached from event successfully"}
+
+# Удалить участника из события (только организатор)
+@router.delete("/{event_id}/participants/{participant_id}")
+def remove_participant_from_event(
+    event_id: int,
+    participant_id: int,
+    user_id: int,
+    db: Session = Depends(get_db)
+):
+
+    event = get_event_or_404(db, event_id)
+
+    if event.organizer_id != user_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only event organizer can remove participants"
+        )
+
+    if participant_id == event.organizer_id:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Cannot remove event organizer"
+        )
+
+    participant = db.query(models.EventParticipant).filter(
+        models.EventParticipant.event_id == event_id,
+        models.EventParticipant.user_id == participant_id
+    ).first()
+
+    if not participant:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Participant not found in this event"
+        )
+
+    db.delete(participant)
+    db.commit()
+
+    return {"message": "Participant removed from event successfully"}
