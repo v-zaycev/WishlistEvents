@@ -4,7 +4,8 @@ from app.routers import (
     login_router,
     wishlists_router,
     events_router,
-    bookings_router
+    bookings_router,
+    expenses_router
 )
 
 app = FastAPI(
@@ -18,6 +19,7 @@ app.include_router(login_router)
 app.include_router(wishlists_router)
 app.include_router(events_router)
 app.include_router(bookings_router)
+app.include_router(expenses_router)
 
 @app.get("/")
 def root():

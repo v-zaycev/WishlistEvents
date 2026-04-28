@@ -126,7 +126,7 @@ class EventWishlistCreate(BaseModel):
 class ExpenseCreate(BaseModel):
     name: str = Field(..., min_length=1, max_length=255)
     description: Optional[str] = None
-    total_amount: float = Field(..., gt=0)
+    total_amount: float = Field(..., gt=0, description="Общая сумма траты")
 
 class ExpenseResponse(BaseModel):
     id: int
@@ -135,6 +135,46 @@ class ExpenseResponse(BaseModel):
     total_amount: float
     event_id: int
     paid_by: Optional[int] = None
+    paid_by_name: Optional[str] = None
+    created_at: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+class ExpenseShareResponse(BaseModel):
+    user_id: int
+    user_name: str
+    amount: float
+    is_paid: bool
+
+    class Config:
+        from_attributes = True
+
+class ExpenseDetailResponse(BaseModel):
+    id: int
+    name: str
+    description: Optional[str] = None
+    total_amount: float
+    paid_by: Optional[int] = None
+    paid_by_name: Optional[str] = None
+    shares: List[ExpenseShareResponse] = []
+
+    class Config:
+        from_attributes = True
+
+class UserBalanceResponse(BaseModel):
+    user_id: int
+    user_name: str
+    paid: float          # Сколько заплатил пользователь
+    owes: float          # Сколько должен пользователь
+    balance: float       # Баланс (положительный - ему должны, отрицательный - он должен)
+
+    class Config:
+        from_attributes = True
+
+class EventExpensesResponse(BaseModel):
+    expenses: List[ExpenseResponse] = []
+    balances: List[UserBalanceResponse] = []
 
     class Config:
         from_attributes = True
