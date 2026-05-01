@@ -1,0 +1,127 @@
+@startuml
+!define table(x) entity x << (T,#FFAAAA) >>
+
+' ============================================
+' ПОЛЬЗОВАТЕЛИ И ДРУЗЬЯ
+' ============================================
+
+table(users) {
+  * id : INTEGER
+  --
+  name : TEXT
+  email : TEXT
+  password : TEXT
+}
+
+table(friend_requests) {
+  * id : INTEGER
+  --
+  sender_id : INTEGER
+  receiver_id : INTEGER
+  status : TEXT
+}
+
+table(friends) {
+  * user1_id : INTEGER
+  * user2_id : INTEGER
+}
+
+' ============================================
+' ВИШЛИСТЫ
+' ============================================
+
+table(wishlists) {
+  * id : INTEGER
+  --
+  name : TEXT
+  description : TEXT
+  user_id : INTEGER
+}
+
+table(items) {
+  * id : INTEGER
+  --
+  name : TEXT
+  description : TEXT
+  price : FLOAT
+  url : TEXT
+  wishlist_id : INTEGER
+  booked_by : INTEGER
+  booked_event_id : INTEGER
+}
+
+' ============================================
+' СОБЫТИЯ
+' ============================================
+
+table(events) {
+  * id : INTEGER
+  --
+  name : TEXT
+  description : TEXT
+  date : DATE
+  organizer_id : INTEGER
+}
+
+table(event_wishlists) {
+  * event_id : INTEGER
+  * wishlist_id : INTEGER
+}
+
+table(event_participants) {
+  * event_id : INTEGER
+  * user_id : INTEGER
+}
+
+' ============================================
+' ФИНАНСЫ
+' ============================================
+
+table(expenses) {
+  * id : INTEGER
+  --
+  name : TEXT
+  total_amount : FLOAT
+  event_id : INTEGER
+  created_by : INTEGER
+}
+
+table(expense_participants) {
+  * expense_id : INTEGER
+  * user_id : INTEGER
+  --
+  amount : FLOAT
+  paid : BOOLEAN
+}
+
+' ============================================
+' СВЯЗИ
+' ============================================
+
+' Друзья (двустороннее отношение)
+users ||--o{ friend_requests : "sender_id"
+users ||--o{ friend_requests : "receiver_id"
+users ||--o{ friends : "user1_id"
+users ||--o{ friends : "user2_id"
+
+' Вишлисты и позиции
+users ||--o{ wishlists : "user_id"
+wishlists ||--o{ items : "wishlist_id"
+
+' События и участники
+users ||--o{ events : "organizer_id"
+users ||--o{ event_participants : "user_id"
+users ||--o{ items : "booked_by"
+users ||--o{ expenses : "created_by"
+users ||--o{ expense_participants : "user_id"
+
+' События
+events ||--o{ event_wishlists : "event_id"
+events ||--o{ event_participants : "event_id"
+events ||--o{ items : "booked_event_id"
+events ||--o{ expenses : "event_id"
+
+' Финансы
+expenses ||--o{ expense_participants : "expense_id"
+
+@enduml
